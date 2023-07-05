@@ -1,6 +1,7 @@
+@sanity @regression
 Feature: Retrieve exchange rate data
 
-  Scenario Outline: Retrieve historical exchange rates
+  Scenario Outline: Retrieve historical exchange rates for specific currency and time frames
     Given the ExchangeRates API is available
     When a request is made to retrieve historical exchange rates for "<baseCurrency>" between "<startDate>" and "<endDate>"
     Then the response status code should be <expectedStatusCode>
