@@ -63,11 +63,8 @@ public class Steps {
     @When("a request is made using an unsupported HTTP method")
     public void makeRequestWithUnsupportedMethod() {
         request = RestAssured.given()
-                .queryParam("apikey", VALID_API_KEY)
-                .queryParam("base", "USD")
-                .queryParam("start_date", "2022-01-01")
-                .queryParam("end_date", "2022-01-07");
-
+                .queryParam("apikey", VALID_API_KEY);
+        //tried to use unsupported method to our endpoint to receive 405
         response = request.delete(ENDPOINT);
     }
 
@@ -82,6 +79,7 @@ public class Steps {
     public void makeRequestToForbiddenResource() {
         request = RestAssured.given()
                 .queryParam("apikey", VALID_API_KEY);
+        //sadly, I'm not aware which resource is forbidden for my api key
         response = request.get("/forbidden_resource");
     }
 
