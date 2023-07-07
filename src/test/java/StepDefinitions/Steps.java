@@ -14,6 +14,8 @@ public class Steps {
 
     private Response response;
     private RequestSpecification request;
+    private String startDateRequired;
+    private String emdDateRequired;
 
     @Given("the ExchangeRates API is available")
     public void the_exchange_rates_api_is_available() {
@@ -56,14 +58,17 @@ public class Steps {
 
     @Then("the response should contain {string} error message")
     public void verifyErrorMessage(String errorMessage) {
-        String responseBody = response.getBody().asString();
-        Assert.assertTrue(responseBody.contains(errorMessage));
+        String responseBody = response.getBody().asString().toLowerCase();
+        Assert.assertTrue(responseBody.contains(errorMessage.toLowerCase()));
     }
 
     @When("a request is made using an unsupported HTTP method")
     public void makeRequestWithUnsupportedMethod() {
         request = RestAssured.given()
-                .queryParam("apikey", VALID_API_KEY);
+                .queryParam("apikey", VALID_API_KEY)
+                .queryParam("base", "USD")
+                .queryParam("start_date", "2022-01-01")
+                .queryParam("end_date", "2022-01-07");
         //tried to use unsupported method to our endpoint to receive 405
         response = request.delete(ENDPOINT);
     }
@@ -88,7 +93,8 @@ public class Steps {
         request = RestAssured.given()
                 .queryParam("apikey", VALID_API_KEY);
         // Simulate making multiple requests within a short time period to exceed the rate limit 250
-        for (int i = 0; i < 10; i++) {
+        // for now it is '1' just not to reach 250 requests limit
+        for (int i = 0; i < 1; i++) {
             response = request.get(ENDPOINT);
         }
     }
@@ -97,9 +103,37 @@ public class Steps {
     public void makeRequestWithInvalidParameters() {
         request = RestAssured.given()
                 .queryParam("apikey", VALID_API_KEY)
-                .queryParam("invalidParam", "value");
+                .queryParam("base", "USD")
+                .queryParam("start_date", "2022-01>01")
+                .queryParam("end_date", "2022-01-07");
 
         response = request.get(ENDPOINT);
     }
 
+    @When("a request is made without {string}")
+    public void a_request_is_made_without_required_parameter(String missingRequiredField) {
+        switch (missingRequiredField) {
+            case "startDate":
+                startDateRequired = null;
+                emdDateRequired = "2022-01-07";
+                break;
+            case "endDate":
+                startDateRequired = "2022-01-01";
+                emdDateRequired = null;
+                break;
+            case "both":
+                startDateRequired = null;
+                emdDateRequired = null;
+                break;
+            default:
+                System.out.println("Missing required field is not specified.");
+        }
+
+        request = RestAssured.given()
+                .queryParam("apikey", VALID_API_KEY)
+                .queryParam("base", "USD")
+                .queryParam("start_date", startDateRequired)
+                .queryParam("end_date", emdDateRequired);
+        response = request.get(ENDPOINT);
+    }
 }

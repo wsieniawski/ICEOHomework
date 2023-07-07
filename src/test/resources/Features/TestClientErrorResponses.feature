@@ -5,7 +5,7 @@ Feature: Client Error Responses are handled with correct codes
     Given the ExchangeRates API is available
     When a request is made with invalid parameters
     Then the response status code should be 400
-    And the response should contain "You have not specified a Time-Frame" error message
+    And the response should contain "You have specified an invalid start date" error message
 
   Scenario: Access the ExchangeRates API without authentication gives 401
     Given the ExchangeRates API is available
