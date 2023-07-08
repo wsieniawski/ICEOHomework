@@ -1,5 +1,5 @@
 # ICEOHomework
-recrutation homework for ICEO company
+recruitment homework for ICEO company
 
 Endpoint: https://api.apilayer.com/exchangerates_data/timeseries
 
