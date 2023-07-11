@@ -6,9 +6,11 @@ import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.junit.Assert;
 
 import static Helpers.Constants.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class Steps {
 
@@ -36,13 +38,13 @@ public class Steps {
     @Then("the response status code should be {int}")
     public void the_response_status_code_should_be(int expectedStatusCode) {
         int actualStatusCode = response.getStatusCode();
-        Assert.assertEquals(expectedStatusCode, actualStatusCode);
+        assertThat(actualStatusCode, equalTo(expectedStatusCode));
     }
 
     @Then("the response should contain exchange rates for {string}")
     public void the_response_should_contain_exchange_rates_for(String targetCurrency) {
         String responseBody = response.getBody().asString();
-        Assert.assertTrue(responseBody.contains(targetCurrency));
+        assertThat(responseBody, containsString(targetCurrency));
     }
 
     @When("a request is made with incorrect authentication credentials")
@@ -58,8 +60,9 @@ public class Steps {
 
     @Then("the response should contain {string} error message")
     public void verifyErrorMessage(String errorMessage) {
+        String message = errorMessage.toLowerCase();
         String responseBody = response.getBody().asString().toLowerCase();
-        Assert.assertTrue(responseBody.contains(errorMessage.toLowerCase()));
+        assertThat(responseBody, containsString(message));
     }
 
     @When("a request is made using an unsupported HTTP method")
